@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="cockpit_test"
+  guid="{f1e2d3c4-b5a6-7890-abcd-1234567890ef}"
+  numberOfEventIndicators="0">
+
+  <CoSimulation
+    modelIdentifier="cockpit_test"
+    canHandleVariableCommunicationStepSize="true">
+    <SourceFiles>
+      <File name="cockpit_test.c"/>
+    </SourceFiles>
+  </CoSimulation>
+
+  <ModelVariables>
+    <ScalarVariable name="In_UserConfirmAirbagState" valueReference="0" description="User confirmation of airbag state"
+                    causality="input" variability="discrete" initial="exact">
+      <Integer start="0"/>
+    </ScalarVariable>
+    <ScalarVariable name="In_PassengerAirbagDisableLamp_bo" valueReference="0" description="Disable lamp input"
+                    causality="input" variability="discrete" initial="exact">
+      <Boolean start="true"/>
+    </ScalarVariable>
+    <ScalarVariable name="In_PassengerAirbagEnableLamp_bo" valueReference="1" description="Enable lamp input"
+                    causality="input" variability="discrete" initial="exact">
+      <Boolean start="true"/>
+    </ScalarVariable>
+    <ScalarVariable name="In_PassengerAirbagWarningState_se" valueReference="1" description="Warning state input"
+                    causality="input" variability="discrete" initial="exact">
+      <Integer start="0"/>
+    </ScalarVariable>
+    <ScalarVariable name="Out_UserConfirmAirbagState_se" valueReference="2" description="Confirmed airbag state output"
+                    causality="output" variability="discrete" initial="calculated">
+      <Integer/>
+    </ScalarVariable>
+    <ScalarVariable name="Out_PassengerAirbagWarningState_se" valueReference="3" description="Warning state output"
+                    causality="output" variability="discrete" initial="calculated">
+      <Integer/>
+    </ScalarVariable>
+    <ScalarVariable name="Out_PassengerAirbagDisableLamp_bo" valueReference="2" description="Disable lamp output"
+                    causality="output" variability="discrete" initial="calculated">
+      <Boolean/>
+    </ScalarVariable>
+  </ModelVariables>
+
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="5"/> <!-- Out_UserConfirmAirbagState_se -->
+      <Unknown index="6"/> <!-- Out_PassengerAirbagWarningState_se -->
+      <Unknown index="7"/> <!-- Out_PassengerAirbagDisableLamp_bo -->
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="5"/>
+      <Unknown index="6"/>
+      <Unknown index="7"/>
+    </InitialUnknowns>
+  </ModelStructure>
+
+</fmiModelDescription>
