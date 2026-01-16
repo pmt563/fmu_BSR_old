@@ -1,16 +1,35 @@
 # vECU KUKSA Connection
 
-[![Build and Push Container Image](https://github.com/pmt563/fmu_BSR_old/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/pmt563/fmu_BSR_old/actions/workflows/build-and-push.yml)
+[![Build Windows Container](https://github.com/pmt563/fmu_BSR_old/actions/workflows/build-windows.yml/badge.svg)](https://github.com/pmt563/fmu_BSR_old/actions/workflows/build-windows.yml)
 
-Co-simulation environment for vECU (virtual ECU) with KUKSA VAL integration, containerized for multi-platform deployment.
+Co-simulation environment for vECU (virtual ECU) with KUKSA VAL integration, containerized for Windows deployment.
 
 ## 🚀 Quick Start
 
 ### Pull Pre-built Image
 
-```bash
-# Pull latest image from GitHub Container Registry
-podman pull ghcr.io/pmt563/fmu_bsr_old:latest
+```powershell
+# Pull Windows image from GitHub Container Registry
+docker pull ghcr.io/pmt563/fmu_bsr_old:windows-latest
+
+# Run with default KUKSA address (localhost:55555)
+docker run ghcr.io/pmt563/fmu_bsr_old:windows-latest
+
+# Run with custom KUKSA address
+docker run ghcr.io/pmt563/fmu_bsr_old:windows-latest 192.168.1.100:55555
+
+# Connect to host machine from container
+docker run ghcr.io/pmt563/fmu_bsr_old:windows-latest host.docker.internal:55555
+```
+
+> **Note:** Requires Windows host with Docker Desktop in Windows container mode.
+
+### Build Locally
+
+```powershell
+docker build -f Dockerfile.windows -t vecu-kuksa:windows .
+docker run vecu-kuksa:windows localhost:55555
+```
 
 # Run with default KUKSA address (localhost:55555)
 podman run ghcr.io/pmt563/fmu_bsr_old:latest

@@ -1,0 +1,81 @@
+name: Build and Push Windows Container
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        run: |
+          $tags = @()
+          $labels = @()
+          
+          # Add branch-based tags
+          if ("${{ github.ref }}" -match "refs/heads/(.+)") {
+            $branch = $matches[1]
+            $tags += "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:windows-$branch"
+            if ($branch -eq "main") {
+              $tags += "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:windows-latest"
+            }
+          }
+          
+          # Add version tags
+          if ("${{ github.ref }}" -match "refs/tags/v(.+)") {
+            $version = $matches[1]
+            $tags += "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:windows-$version"
+          }
+          
+          # Add SHA tag
+          $sha = "${{ github.sha }}".Substring(0, 7)
+          $tags += "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:windows-$sha"
+          
+          # Output tags
+          $tagsString = $tags -join ","
+          echo "tags=$tagsString" >> $env:GITHUB_OUTPUT
+          
+          # Add labels
+          echo "labels=org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" >> $env:GITHUB_OUTPUT
+
+      - name: Build Windows container image
+        run: |
+          docker build -f Dockerfile.windows -t temp-image .
+
+      - name: Tag and push images
+        if: github.event_name != 'pull_request'
+        run: |
+          $tags = "${{ steps.meta.outputs.tags }}" -split ","
+          foreach ($tag in $tags) {
+            docker tag temp-image $tag
+            docker push $tag
+          }
+
+      - name: Image digest
+        run: |
+          docker images --digests
